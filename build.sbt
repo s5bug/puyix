@@ -13,3 +13,8 @@ lazy val core = (project in file(".")).settings(
     "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   ),
 )
+
+resolvers ++= Seq(
+  "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/",
+  "Artima Maven Repository" at "http://repo.artima.com/releases/",
+)
