@@ -22,9 +22,9 @@ class Tetris extends GameMode {
   override def onNext(elem: GameEvent): Future[Ack] = Future {
     elem match {
       case GarbageQueueEvent(g) =>
+        def garbageDivisions = Stream.iterate(0)(n => if(SecureRandom.getInstanceStrong.nextInt(10) < 3) n + 1 else n)
         val garbageLines = (g.score / UInt(200)).toLong
-        var change = 0
-        val groups = (0l to garbageLines).groupBy { _ => if(SecureRandom.getInstanceStrong.nextInt(10) < 3) change = change + 1; change }.values.map(_.size)
+        val groups = garbageDivisions.take(garbageLines.toInt)
         groups.foreach(garbageQueue.add)
     }
     Ack.Continue
