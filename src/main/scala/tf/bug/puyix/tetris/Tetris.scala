@@ -1,15 +1,33 @@
 package tf.bug.puyix.tetris
 
+import java.util.concurrent.ConcurrentLinkedDeque
+
 import monix.execution.{Ack, Cancelable}
 import monix.reactive.observers.Subscriber
-import tf.bug.puyix.event.GameEvent
+import spire.math.UInt
+import tf.bug.puyix.event.{GameEvent, GarbageQueueEvent}
 import tf.bug.puyix.game.board.GameMode
 
-import scala.concurrent.Future
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 class Tetris extends GameMode {
 
-  override def onNext(elem: GameEvent): Future[Ack] = ???
+  private val garbageQueue: ConcurrentLinkedDeque[Int] = new ConcurrentLinkedDeque[Int]()
+
+  def getGarbageQueue: Seq[Int] = garbageQueue.asScala.toSeq
+
+  override def onNext(elem: GameEvent): Future[Ack] = Future {
+    elem match {
+      case GarbageQueueEvent(g) =>
+        val garbageLines = (g.score / UInt(200)).toLong
+        var change = 0
+        val groups = (0l to garbageLines).groupBy { _ => if(Random.nextInt(10) < 3) change = change + 1; change }.values.map(_.size)
+        groups.foreach(garbageQueue.add)
+    }
+    Ack.Continue
+  }(ExecutionContext.global)
 
   override def onError(ex: Throwable): Unit = ???
 
