@@ -1,5 +1,6 @@
 package tf.bug.puyix.tetris
 
+import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedDeque
 
 import monix.execution.{Ack, Cancelable}
@@ -23,7 +24,7 @@ class Tetris extends GameMode {
       case GarbageQueueEvent(g) =>
         val garbageLines = (g.score / UInt(200)).toLong
         var change = 0
-        val groups = (0l to garbageLines).groupBy { _ => if(Random.nextInt(10) < 3) change = change + 1; change }.values.map(_.size)
+        val groups = (0l to garbageLines).groupBy { _ => if(SecureRandom.getInstanceStrong.nextInt(10) < 3) change = change + 1; change }.values.map(_.size)
         groups.foreach(garbageQueue.add)
     }
     Ack.Continue
