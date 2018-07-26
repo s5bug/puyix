@@ -32,7 +32,7 @@ class Tetris extends GameMode {
 
   override def onError(ex: Throwable): Unit = ???
 
-  override def onComplete(): Unit = ???
+  override def onComplete(): Unit = {}
 
   override def unsafeSubscribeFn(subscriber: Subscriber[GameEvent]): Cancelable = ???
 
