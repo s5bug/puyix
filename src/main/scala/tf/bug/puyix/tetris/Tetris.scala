@@ -24,7 +24,7 @@ class Tetris extends GameMode {
       case GarbageQueueEvent(g) =>
         def garbageDivisions = Stream.iterate(0)(n => if(SecureRandom.getInstanceStrong.nextInt(10) < 3) n + 1 else n)
         val garbageLines = (g.score / UInt(200)).toLong
-        val groups = garbageDivisions.take(garbageLines.toInt)
+        val groups = garbageDivisions.take(garbageLines.toInt).toSeq.groupBy(i => i).values.map(_.size)
         groups.foreach(garbageQueue.add)
     }
     Ack.Continue

@@ -15,6 +15,6 @@ lazy val core = (project in file(".")).settings(
 )
 
 resolvers ++= Seq(
-  "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/",
-  "Artima Maven Repository" at "http://repo.artima.com/releases/",
+  "Typesafe Repository @ Dependencies" at "https://repo.typesafe.com/typesafe/releases/",
+  "Artima Maven Repository @ Dependencies" at "http://repo.artima.com/releases/",
 )
