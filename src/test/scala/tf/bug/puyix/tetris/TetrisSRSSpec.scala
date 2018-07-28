@@ -71,44 +71,20 @@ class TetrisSRSSpec extends WordSpec {
           .flatMap(f => f.set(7, 0, None))
         val b = qa(filledRows.runAsync)
         val piece = MovingTetrisPiece((7, 2), TetrisT, TetrisPieceRotation.Up)
-        println(printBoardWithPiece(b, piece))
-        println(printBoardWithPiece(b, piece.copy(rotation = TetrisPieceRotation.Right)))
         assertResult(Some(-1, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Right).runAsync))
       }
     }
   }
 
   def printBoard(b: TetrisBoard): String = {
-    var str = ""
-    (0 until 22).toSeq.reverse.foreach(y => {
-      (0 until 10).foreach(x => {
+    (0 until 22).toSeq.reverse.foldLeft("")((s, y) => {
+      s + (0 until 10).foldLeft("")((t, x) => {
         (b / (x, y)) match {
-          case None => str += " "
-          case Some(_) => str += "#"
+          case None => t + " "
+          case Some(_) => t + "#"
         }
-      })
-      str += "\n"
+      }) + "\n"
     })
-    str
-  }
-
-  def printBoardWithPiece(b: TetrisBoard, p: MovingTetrisPiece): String = {
-    val pl = p.positions
-    var str = ""
-    (0 until 22).toSeq.reverse.foreach(y => {
-      (0 until 10).foreach(x => {
-        if(pl.contains((x, y))) {
-          str += "x"
-        } else {
-          (b / (x, y)) match {
-            case None => str += " "
-            case Some(_) => str += "#"
-          }
-        }
-      })
-      str += "\n"
-    })
-    str
   }
 
 }
