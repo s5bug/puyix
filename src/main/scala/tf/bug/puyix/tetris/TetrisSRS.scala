@@ -1,6 +1,7 @@
 package tf.bug.puyix.tetris
 
 import monix.eval.Task
+import monix.execution.Scheduler
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
@@ -44,8 +45,7 @@ object TetrisSRS {
     translations.dropWhile { 
       case (x, y) =>
         val translatedPiece = rotatedPiece.copy(lowerLeftCoords = (x + rx, y + ry))
-        import monix.execution.Scheduler.Implicits.global
-        val f = isTetrisPieceValid(board, translatedPiece).runAsync
+        val f = isTetrisPieceValid(board, translatedPiece).runAsync(Scheduler.Implicits.global)
         val result = Await.result(f, Duration.Inf)
         !result
     }.headOption

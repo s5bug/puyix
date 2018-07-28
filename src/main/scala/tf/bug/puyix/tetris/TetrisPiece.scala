@@ -1,6 +1,7 @@
 package tf.bug.puyix.tetris
 
 import tf.bug.puyix.game.board.GarbageType
+import tf.bug.puyix.tetris.TetrisPieceRotation._
 
 sealed trait TetrisBlock
 
@@ -112,7 +113,6 @@ case class MovingTetrisPiece(lowerLeftCoords: (Int, Int), piece: TetrisPiece, ro
     * Turns the blockmask specified by the piece into a relative (x)(y) mask of its currest location.
     * Lower y coordinates mean closer to the bottom of the board. */
   def getBlocks: Array[Array[Boolean]] = {
-    import TetrisPieceRotation._
     val s = piece.spawnBlocks
     rotation match {
       case Up => s.reverse.transpose
