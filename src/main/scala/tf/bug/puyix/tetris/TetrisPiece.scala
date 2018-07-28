@@ -106,4 +106,33 @@ object TetrisPieceRotation {
 
 }
 
-case class MovingTetrisPiece(upperLeftCoords: (Int, Int), t: TetrisPiece, r: TetrisPieceRotation)
+case class MovingTetrisPiece(lowerLeftCoords: (Int, Int), piece: TetrisPiece, rotation: TetrisPieceRotation) {
+
+  /**
+    * Turns the blockmask specified by the piece into a relative (x)(y) mask of its currest location.
+    * Lower y coordinates mean closer to the bottom of the board. */
+  def getBlocks: Array[Array[Boolean]] = {
+    import TetrisPieceRotation._
+    val s = piece.spawnBlocks
+    rotation match {
+      case Up => s.reverse.transpose
+      case Right => s.reverse
+      case Down => s.transpose
+      case Left => s
+    }
+  }
+
+  def positions: Array[(Int, Int)] = {
+    val (cx, cy) = lowerLeftCoords
+    getBlocks.zipWithIndex.flatMap {
+      case (col, x) => col.zipWithIndex.map {
+        case (set, y) => ((x + cx, y + cy), set)
+      }
+    }.filter {
+      case (coords, set) => set
+    }.map {
+      case (coords, set) => coords
+    }
+  }
+
+}

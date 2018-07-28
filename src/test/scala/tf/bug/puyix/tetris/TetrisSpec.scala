@@ -1,6 +1,8 @@
 package tf.bug.puyix.tetris
 
+import java.util.concurrent.TimeUnit
 import org.scalatest._
+import scala.concurrent.duration.FiniteDuration
 import spire.math.UInt
 import tf.bug.puyix.event.GarbageQueueEvent
 import tf.bug.puyix.game.board.Garbage
@@ -10,7 +12,7 @@ import scala.concurrent.duration.Duration
 
 class TetrisSpec extends WordSpec {
 
-  def qa[T](f: Future[T]): T = Await.result(f, Duration.Inf)
+  def qa[T](f: Future[T]): T = Await.result(f, FiniteDuration(1, TimeUnit.MINUTES))
 
   "Tetris" when {
     "sending garbage points < 200" should {
