@@ -116,7 +116,7 @@ case class MovingTetrisPiece(lowerLeftCoords: (Int, Int), piece: TetrisPiece, ro
     val s = piece.spawnBlocks
     rotation match {
       case Up => s.reverse.transpose
-      case Right => s.reverse
+      case Right => s.reverse.map(_.reverse)
       case Down => s.transpose
       case Left => s
     }

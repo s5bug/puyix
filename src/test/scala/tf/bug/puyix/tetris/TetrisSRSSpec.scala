@@ -74,6 +74,61 @@ class TetrisSRSSpec extends WordSpec {
         assertResult(Some(-1, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Right).runAsync))
       }
     }
+    "setting up an Z-Spin Triple" should {
+      "produce a set board" in {
+        val board = TetrisBoard()
+        val filledRows = (0 until 3).foldLeft(Task(board))((yb, y) => {
+          (0 until 10).foldLeft(yb)((xb, x) => {
+            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
+          })
+        })
+          .flatMap(f => f.set(4, 3, Some(TetrisL)))
+          .flatMap(f => f.set(6, 2, None))
+          .flatMap(f => f.set(5, 1, None))
+          .flatMap(f => f.set(6, 1, None))
+          .flatMap(f => f.set(5, 0, None))
+        val b = qa(filledRows.runAsync)
+        assertResult("""          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |    #     
+                       |###### ###
+                       |#####  ###
+                       |##### ####
+                       |""".stripMargin)(printBoard(b))
+      }
+      "give a correct transformation on rotation" in {
+        val board = TetrisBoard()
+        val filledRows = (0 until 3).foldLeft(Task(board))((yb, y) => {
+          (0 until 10).foldLeft(yb)((xb, x) => {
+            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
+          })
+        })
+          .flatMap(f => f.set(4, 3, Some(TetrisL)))
+          .flatMap(f => f.set(6, 2, None))
+          .flatMap(f => f.set(5, 1, None))
+          .flatMap(f => f.set(6, 1, None))
+          .flatMap(f => f.set(5, 0, None))
+        val b = qa(filledRows.runAsync)
+        val piece = MovingTetrisPiece((4, 2), TetrisZ, TetrisPieceRotation.Up)
+        assertResult(Some(0, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Right).runAsync))
+      }
+    }
   }
 
   def printBoard(b: TetrisBoard): String = {
