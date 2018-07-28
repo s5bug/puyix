@@ -10,10 +10,13 @@ import tf.bug.puyix.event.{GameEvent, GarbageQueueEvent}
 import tf.bug.puyix.game.board.GameMode
 
 import scala.collection.JavaConverters._
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
 class Tetris extends GameMode {
+
+  private val subscribers: mutable.Set[Subscriber[GameEvent]] = mutable.Set[Subscriber[GameEvent]]()
 
   private val garbageQueue: ConcurrentLinkedDeque[Int] = new ConcurrentLinkedDeque[Int]()
 
@@ -30,10 +33,10 @@ class Tetris extends GameMode {
     Ack.Continue
   }(ExecutionContext.global)
 
-  override def onError(ex: Throwable): Unit = ???
+  override def onError(ex: Throwable): Unit = throw ex
 
   override def onComplete(): Unit = {}
 
-  override def unsafeSubscribeFn(subscriber: Subscriber[GameEvent]): Cancelable = ???
+  override def unsafeSubscribeFn(subscriber: Subscriber[GameEvent]): Cancelable = Cancelable(() => subscribers += subscriber)
 
 }
