@@ -97,10 +97,13 @@ case object TetrisL extends TetrisPiece {
 }
 
 sealed trait TetrisPieceRotation
+object TetrisPieceRotation {
 
-case object Up extends TetrisPieceRotation
-case object Right extends TetrisPieceRotation
-case object Down extends TetrisPieceRotation
-case object Left extends TetrisPieceRotation
+  case object Up extends TetrisPieceRotation
+  case object Right extends TetrisPieceRotation
+  case object Down extends TetrisPieceRotation
+  case object Left extends TetrisPieceRotation
+
+}
 
 case class MovingTetrisPiece(upperLeftCoords: (Int, Int), t: TetrisPiece, r: TetrisPieceRotation)
