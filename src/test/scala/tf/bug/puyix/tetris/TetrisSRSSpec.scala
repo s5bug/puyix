@@ -12,23 +12,15 @@ class TetrisSRSSpec extends WordSpec {
 
   "TetrisSRS" when {
     "setting up a T-Spin Triple" should {
+      val board = TetrisBoard.bigBang(Seq.fill(5)(TetrisT), Seq(
+        (8, 4), (9, 4),
+        (7, 3), (8, 3), (9, 3),
+        (7, 2),
+        (7, 1), (8, 1),
+        (7, 0)
+      ))
+      val b = qa(board.runAsync)
       "produce a set board" in {
-        val board = TetrisBoard()
-        val filledRows = (0 until 5).foldLeft(Task(board))((yb, y) => {
-          (0 until 10).foldLeft(yb)((xb, x) => {
-            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
-          })
-        })
-          .flatMap(f => f.set(8, 4, None))
-          .flatMap(f => f.set(9, 4, None))
-          .flatMap(f => f.set(7, 3, None))
-          .flatMap(f => f.set(8, 3, None))
-          .flatMap(f => f.set(9, 3, None))
-          .flatMap(f => f.set(7, 2, None))
-          .flatMap(f => f.set(7, 1, None))
-          .flatMap(f => f.set(8, 1, None))
-          .flatMap(f => f.set(7, 0, None))
-        val b = qa(filledRows.runAsync)
         assertResult("""          
                        |          
                        |          
@@ -54,40 +46,18 @@ class TetrisSRSSpec extends WordSpec {
                        |""".stripMargin)(printBoard(b))
       }
       "give a correct transformation on rotation" in {
-        val board = TetrisBoard()
-        val filledRows = (0 until 5).foldLeft(Task(board))((yb, y) => {
-          (0 until 10).foldLeft(yb)((xb, x) => {
-            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
-          })
-        })
-          .flatMap(f => f.set(8, 4, None))
-          .flatMap(f => f.set(9, 4, None))
-          .flatMap(f => f.set(7, 3, None))
-          .flatMap(f => f.set(8, 3, None))
-          .flatMap(f => f.set(9, 3, None))
-          .flatMap(f => f.set(7, 2, None))
-          .flatMap(f => f.set(7, 1, None))
-          .flatMap(f => f.set(8, 1, None))
-          .flatMap(f => f.set(7, 0, None))
-        val b = qa(filledRows.runAsync)
         val piece = MovingTetrisPiece((7, 2), TetrisT, TetrisPieceRotation.Up)
         assertResult(Some(-1, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Right).runAsync))
       }
     }
     "setting up an Z-Spin Triple" should {
+      val board = TetrisBoard.bigBang(Seq.fill(3)(TetrisZ), Seq(
+        (6, 2),
+        (5, 1), (6, 1),
+        (5, 0)
+      ), Map((4, 3) -> TetrisZ))
+      val b = qa(board.runAsync)
       "produce a set board" in {
-        val board = TetrisBoard()
-        val filledRows = (0 until 3).foldLeft(Task(board))((yb, y) => {
-          (0 until 10).foldLeft(yb)((xb, x) => {
-            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
-          })
-        })
-          .flatMap(f => f.set(4, 3, Some(TetrisL)))
-          .flatMap(f => f.set(6, 2, None))
-          .flatMap(f => f.set(5, 1, None))
-          .flatMap(f => f.set(6, 1, None))
-          .flatMap(f => f.set(5, 0, None))
-        val b = qa(filledRows.runAsync)
         assertResult("""          
                        |          
                        |          
@@ -113,20 +83,50 @@ class TetrisSRSSpec extends WordSpec {
                        |""".stripMargin)(printBoard(b))
       }
       "give a correct transformation on rotation" in {
-        val board = TetrisBoard()
-        val filledRows = (0 until 3).foldLeft(Task(board))((yb, y) => {
-          (0 until 10).foldLeft(yb)((xb, x) => {
-            xb.flatMap(f => f.set(x, y, Some(TetrisL)))
-          })
-        })
-          .flatMap(f => f.set(4, 3, Some(TetrisL)))
-          .flatMap(f => f.set(6, 2, None))
-          .flatMap(f => f.set(5, 1, None))
-          .flatMap(f => f.set(6, 1, None))
-          .flatMap(f => f.set(5, 0, None))
-        val b = qa(filledRows.runAsync)
         val piece = MovingTetrisPiece((4, 2), TetrisZ, TetrisPieceRotation.Up)
         assertResult(Some(0, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Right).runAsync))
+      }
+    }
+    "setting up an S-Spin Triple" should {
+      val board = TetrisBoard.bigBang(Seq.fill(3)(TetrisS), Seq(
+        (3, 2),
+        (3, 1), (4, 1),
+        (4, 0)
+      ), Map((5, 3) -> TetrisS))
+      val b = qa(board.runAsync)
+      "produce a set board" in {
+        assertResult("""          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |          
+                       |     #    
+                       |### ######
+                       |###  #####
+                       |#### #####
+                       |""".stripMargin)(printBoard(b))
+      }
+      "give a correct transformation on rotation" in {
+        val piece = MovingTetrisPiece((3, 2), TetrisS, TetrisPieceRotation.Up)
+        assertResult(Some(0, -2))(qa(TetrisSRS.getValidTranslation(b, piece, TetrisPieceRotation.Left).runAsync))
+      }
+    }
+    "setting up a leftwards I-Spin Single" should {
+      "produce a set board" in {
+
       }
     }
   }
@@ -142,4 +142,19 @@ class TetrisSRSSpec extends WordSpec {
     })
   }
 
+  def printBoardWithPiece(b: TetrisBoard, p: MovingTetrisPiece): String = {
+    val pl = p.positions
+    (0 until 22).toSeq.reverse.foldLeft("")((s, y) => {
+      s + (0 until 10).foldLeft("")((t, x) => {
+        if(pl.contains((x, y))) {
+          t + "x"
+        } else {
+          (b / (x, y)) match {
+            case None => t + " "
+            case Some(_) => t + "#"
+          }
+        }
+      }) + "\n"
+    })
+  }
 }

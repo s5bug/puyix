@@ -28,3 +28,26 @@ case class TetrisBoard(blocks: Seq[Seq[Option[TetrisBlock]]] = Seq.fill(10, 22)(
   }.flatten
 
 }
+
+object TetrisBoard { 
+
+  def bigBang(
+    fill: Seq[TetrisBlock],
+    remove: Seq[(Int, Int)] = Seq(),
+    add: Map[(Int, Int), TetrisBlock] = Map()
+  ): Task[TetrisBoard] = {
+    val ob = Task(TetrisBoard())
+    val fb = fill.zipWithIndex.foldLeft(ob) {
+      case (b, (r, i)) =>
+        b.flatMap(yb => (0 until 10).foldLeft(Task(yb))((xb, n) => xb.flatMap(_.set(n, i, Some(r)))))
+    }
+    val rb = remove.foldLeft(fb) {
+      case (b, (x, y)) => b.flatMap(_.set(x, y, None))
+    }
+    val ab = add.toSeq.foldLeft(rb) {
+      case (b, ((x, y), s)) => b.flatMap(_.set(x, y, Some(s)))
+    }
+    ab
+  }
+
+}
